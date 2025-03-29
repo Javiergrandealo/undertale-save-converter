@@ -16,6 +16,7 @@ This version is a complete re-write, and features full bi-directional conversion
 1. Download the latest release from https://github.com/Javiergrandealo/undertale-save-converter
 2. Save it to a folder on your local computer.
 3. Copy your game save files to the same folder.
+4. Run the script in your terminal (do not use enviroments)
 
 
 ### Converting from PC to Switch/Vita
