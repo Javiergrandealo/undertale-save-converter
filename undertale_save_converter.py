@@ -1,13 +1,12 @@
-# Undertale Game Save Converter (For PC and Switch)
-# https://github.com/tomchapin/undertale-save-converter
+# Undertale Game Save Converter (For PC, Switch and PSVita)
+# https://github.com/Javiergrandealo/undertale-save-converter
+#Forked from: https://github.com/tomchapin/undertale-save-converter/tree/master
 
 #############################################################################################
 # Imports
 #############################################################################################
-
-import msvcrt  # For getting user input on Windows (we use this on our main menu)
-import subprocess  # For executing a shell command (we use this to clear the screen)
-
+import os
+import sys
 
 #############################################################################################
 # Helper Methods
@@ -16,72 +15,71 @@ import subprocess  # For executing a shell command (we use this to clear the scr
 def clear_screen():
     """
     Clears the terminal screen.
-    Only compatible with Windows.
+    Compatible with Windows, macOS, and Linux.
     """
-    return subprocess.call("cls", shell=True) == 0
+    if os.name == 'nt':  # Windows
+        os.system("cls")
+    else:  # macOS and Linux
+        os.system("clear")
 
 
 #############################################################################################
-# PC to Switch
+# PC to Switch/Vita
 #############################################################################################
 
 def pc_file_to_switch_text(input_file):
     """
-    Converts all of the PC file's lines to a single line of text meant for the Switch game save file
+    Converts lines in a PC file (such as file9 or file0) into a single line of text
+    with line breaks formatted for Switch/Vita.
     """
     result = ''
     file_contents = input_file.read()
 
-    for cnt, line in enumerate(file_contents):
-        # Remove line break character from end of line
-        new_line = line.replace("\n", '')
+    # Divide the content into lines and process each one
+    lines = file_contents.splitlines()
+    for cnt, line in enumerate(lines):
+        # Removes whitespace at the beginning and end of the line
+        new_line = line.strip()
 
-        # Strip spaces from the end of line
-        new_line = new_line.rstrip()
-
-        if cnt+1 < len(file_contents):
-            # Add on line break characters (unless this is the very last line)
-            new_line = new_line + "\\r\\n"
-
-        result += new_line
+        # Add a line break "\r\n" after each line except the last one
+        if cnt < len(lines) - 1:
+            result += new_line + "\\r\\n"
+        else:
+            result += new_line  # The last line does not have "\r\n"
 
     return result
-
 
 def pc_undertale_ini_to_switch_text(input_file):
     """
-    Converts all of the undertale.ini file's lines to a single line of text meant for the Switch game save file
+    Converts all of the PC undertale.ini file's lines to a single line of text meant for the Switch or Vita game save file
     """
     result = ''
     file_contents = input_file.read()
 
-    for cnt, line in enumerate(file_contents):
-        # Remove line break character from end of line
-        new_line = line.replace("\n", '')
+    for line in file_contents.splitlines():  # Divide text into lines
+        new_line = line.strip()  # delete spaces from the start and end of the line
 
-        if not new_line.startswith("["):
-            # Escape quotes on any non-header lines
-            # For Example: Room="31.000000"
-            #     Becomes: Room=\"31.000000\"
-            r = new_line.split("=")
-            p = r[1].split('"')
-            p = p[1]
-            new_line = r[0] + '=\\"' + p + '\\"'
+        if not new_line:  # Ignore empty lines
+            continue
 
-        # Add on line break characters to end of the line
-        new_line = new_line + "\\r\\n"
+        if new_line.startswith("["):  # if the line starts with a bracket
+            result += new_line + "\\r\\n"
+        elif "=" in new_line:  # if the line is a key-value pair
+            key, value = new_line.split("=", 1)  # Divide the line into key and value
+            value = value.strip('"')  # delete quotes from the start and end of the value
+            result += f'{key}=\\"{value}\\"\\r\\n'
+        else:
+            # if the line is not a key-value pair or a bracket
+            continue
 
-        result += new_line
-
-    # Replace double line endings before section headers with a single carriage return
+    # Replaze the last line ending with a space
     result = result.replace("\\r\\n[", "\\r[")
 
     return result
-    
 
 def convert_from_pc_to_switch():
     clear_screen()
-    print("Converting from PC to switch...")
+    print("Converting from PC to switch/vita...")
 
     pc_file9 = open("file9", "r")
     pc_file0 = open("file0", "r")
@@ -106,7 +104,7 @@ def convert_from_pc_to_switch():
 
 
 #############################################################################################
-# Switch to PC
+# Switch/Vita to PC
 #############################################################################################
 
 def undertale_save_contents():
@@ -159,7 +157,7 @@ def switch_undertale_ini_to_pc_file_lines(extracted_text):
 
 def convert_from_switch_to_pc():
     clear_screen()
-    print("Converting from Switch to PC...")
+    print("Converting from Switch/Vita to PC...")
 
     pc_file9 = open("file9", "w")
     pc_file9.write(switch_file_text_to_pc_file_lines(file9_content_from_switch_save()))
@@ -184,33 +182,32 @@ def display_menu():
     clear_screen()
     print("")
     print("  -------------------------------------")
-    print("  Undertale PC/Switch Save Converter")
+    print("  Undertale PC/Switch/Vita Save Converter")
     print("  -------------------------------------")
     print("")
-    print("  1. Convert from PC to Switch")
+    print("  1. Convert from PC to Switch/Vita")
     print("     Make sure you have copied your game's file0, file9, and undertale.ini files to this folder.")
     print("     (These files are typically located in your system's %LocalAppData%\\UNDERTALE\\ folder)")
     print("")
-    print("  2. Convert from Switch to PC")
-    print("     Make sure you have the undertale.sav file copied from your Nintendo Switch.")
-    print("     This file can be obtained from a modded switch by using tools such as Checkpoint or JKSM.")
-    print("     Checkpoint: https://gbatemp.net/threads/checkpoint-a-simple-and-fast-save-manager.485591")
-    print("           JKSM: https://github.com/J-D-K/JKSM")
+    print("  2. Convert from Switch/Vita to PC")
+    print("     Make sure you have the undertale.sav file copied from your Nintendo Switch or PSVita.")
     print("")
-    print("  Press (1) or (2) to select a menu option, or press (Escape) to exit:")
+    print("  Press (1) or (2) to select a menu option, or type 'exit' to quit:")
 
-    user_input = msvcrt.getch()
-    if user_input == b'1':
-        # 1 was pressed
+    user_input = input("Your choice: ").strip().lower()
+    if user_input == '1':
+        # 1 was selected
         convert_from_pc_to_switch()
-    elif user_input == b'2':
-        # 2 was pressed
+    elif user_input == '2':
+        # 2 was selected
         convert_from_switch_to_pc()
-    elif user_input == b'\x1b':
-        # Exit, because escape key was pressed
+    elif user_input == 'exit':
+        # Exit the program
         return
     else:
-        # An unrecognized key was pressed, so we clear the screen and display the menu again
+        # Invalid input, redisplay the menu
+        print("Invalid input. Please try again.")
+        input("Press Enter to continue...")
         display_menu()
 
 

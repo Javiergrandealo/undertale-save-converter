@@ -13,14 +13,14 @@ This version is a complete re-write, and features full bi-directional conversion
 
 
 ## Installation and Usage
-1. Download the latest release from
+1. Download the latest release from https://github.com/Javiergrandealo/undertale-save-converter
 2. Save it to a folder on your local computer.
 3. Copy your game save files to the same folder.
 
 
 ### Converting from PC to Switch/Vita
 1. Make sure you have copied your game's file0, file9, and undertale.ini files into the folder with the undertale_save_converter.py file.
-   (These files are typically located in your system's %LocalAppData%\UNDERTALE\ folder)
+   (These files are typically located in your system's %LocalAppData%\UNDERTALE\ folder on Windows)
 2. Use your command prompt to browse to the folder, then execute `undertale_save_converter.py` and select the first menu option.
 
 
@@ -28,8 +28,6 @@ This version is a complete re-write, and features full bi-directional conversion
 ### Converting from Switch to PC
 1. Make sure you have the undertale.sav file copied from your Nintendo Switch placed in the folder with the undertale_save_converter.py file.
    This file can be obtained from a modded switch by using tools such as Checkpoint or JKSM.
-   - Checkpoint: https://gbatemp.net/threads/checkpoint-a-simple-and-fast-save-manager.485591
-   - JKSM: https://github.com/J-D-K/JKSM
 2. Use your command prompt to browse to the folder, then execute `undertale_save_converter.py` and select the second menu option.
 
 ### Converting from Vita to PC
@@ -38,4 +36,4 @@ This version is a complete re-write, and features full bi-directional conversion
 3. Use your command prompt to browse to the folder, then execute `undertale_save_converter.py` and select the second menu option.
 
 
-### This version is cross platform so you can run this script on any machine (not only windows)
+### This version is cross platform so you can run this script on any machine (not only on windows)
