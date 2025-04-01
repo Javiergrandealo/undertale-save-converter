@@ -1,4 +1,4 @@
-# Undertale PC/Switch/Vita Save File Converter V2.1 (Javiergrandealo fork)
+# Undertale PC/Switch/Vita Save File Converter V2.2 (Javiergrandealo fork)
 Inspired by JonyLuke's Undertale Save Converter (https://github.com/jonyluke/Undertale-save-converter).
 This version is a complete re-write, and features full bi-directional conversion functionality.
 
